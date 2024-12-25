@@ -3,6 +3,7 @@ package io.github.spigotrce.mectoproxy;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
+import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyPingEvent;
 import com.velocitypowered.api.network.ProtocolVersion;
@@ -104,6 +105,15 @@ public class MeCtoProxy {
                 "Incoming connection from {} player name: {}, forcing offline mode authentication",
                 event.getUsername(),
                 event.getConnection().getRemoteAddress().getAddress()
+        );
+    }
+
+    @Subscribe
+    public void onServerConnectEvent(ServerConnectedEvent event) {
+        LOGGER.info(
+                "Player {} connected to server {}",
+                event.getPlayer().getUsername(),
+                event.getServer().getServerInfo().getName()
         );
     }
 }
