@@ -79,6 +79,7 @@ public class MeCtoProxy {
                 ).get();
             } catch (InterruptedException | ExecutionException e) {
                 LOGGER.error("Failed to ping target server", e);
+                LOGGER.info("Using cached server ping indication until next successful ping");
             }
         }).repeat(10, TimeUnit.SECONDS).schedule();
 
