@@ -85,6 +85,8 @@ public class MeCtoProxy {
             }
         }).repeat(10, TimeUnit.SECONDS).schedule();
 
+        PROXY_SERVER.getCommandManager().getAliases().forEach(command -> PROXY_SERVER.getCommandManager().unregister(command));
+
         LOGGER.info("MeCtoProxy initialized successfully!");
     }
 
