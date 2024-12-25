@@ -2,13 +2,16 @@ package io.github.spigotrce.mectoproxy;
 
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.command.CommandExecuteEvent;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
+import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyPingEvent;
 import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
+import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.PingOptions;
 import com.velocitypowered.api.proxy.server.ServerInfo;
@@ -116,6 +119,26 @@ public class MeCtoProxy {
                 "Player {} connected to server {}",
                 event.getPlayer().getUsername(),
                 event.getServer().getServerInfo().getName()
+        );
+    }
+
+    @Subscribe
+    public void onPlayerCommandEvent(CommandExecuteEvent event) {
+        if (!(event.getCommandSource() instanceof Player player)) return;
+
+        LOGGER.info(
+                "Player {} executed command '{}'",
+                player.getUsername(),
+                event.getCommand()
+        );
+    }
+
+    @Subscribe
+    public void onPlayerChatEvent(PlayerChatEvent event) {
+        LOGGER.info(
+                "Player {} sent chat message: {}",
+                event.getPlayer().getUsername(),
+                event.getMessage()
         );
     }
 }
