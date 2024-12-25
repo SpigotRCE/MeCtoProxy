@@ -4,9 +4,11 @@ import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyPingEvent;
+import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.server.PingOptions;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import com.velocitypowered.api.proxy.server.ServerPing;
@@ -37,7 +39,9 @@ public class MeCtoProxy {
     public static int TARGET_SERVER_PORT; // Port number
     public static String TARGET_SERVER_HOSTNAME; // Hostname
 
-    public static ServerPing CACHED_SERVER_PING;
+    public static ServerPing CACHED_SERVER_PING; // Cached target server ping
+
+    public static ProtocolVersion LAST_PROTOCOL_VERSION; // Last protocol version of the client
 
     @Inject
     public MeCtoProxy(Logger logger, @DataDirectory Path dataDirectory, ProxyServer proxyServer) {
@@ -45,12 +49,15 @@ public class MeCtoProxy {
         DATA_DIRECTORY = dataDirectory;
         PROXY_SERVER = proxyServer;
 
+        // Placeholder
         CACHED_SERVER_PING = new ServerPing(
                 new ServerPing.Version(47, "1.8.8"),
                 null,
                 Component.text("Welcome"),
                 new Favicon("data:image/png;base64,") // TODO: Add a placing holding favicon
         );
+
+        LAST_PROTOCOL_VERSION = ProtocolVersion.MINECRAFT_1_8; // Placeholder
     }
 
     @Subscribe
@@ -68,7 +75,9 @@ public class MeCtoProxy {
         // Starting an asynchronous task to cache the server ping information
         PROXY_SERVER.getScheduler().buildTask(this, () -> {
             try {
-                CACHED_SERVER_PING = PROXY_SERVER.getAllServers().stream().findFirst().get().ping().get();
+                CACHED_SERVER_PING = PROXY_SERVER.getAllServers().stream().findFirst().get().ping(
+                        PingOptions.builder().version(LAST_PROTOCOL_VERSION).build()
+                ).get();
             } catch (InterruptedException | ExecutionException e) {
                 LOGGER.error("Failed to ping target server", e);
             }
@@ -80,6 +89,7 @@ public class MeCtoProxy {
     @Subscribe
     public void onProxyPing(ProxyPingEvent event) {
         LOGGER.info("Received proxy ping from: {}", event.getConnection().getRemoteAddress().getAddress());
+        LAST_PROTOCOL_VERSION = event.getConnection().getProtocolVersion(); // Updating the last protocol version oof the client
         event.setPing(CACHED_SERVER_PING);
     }
 }
