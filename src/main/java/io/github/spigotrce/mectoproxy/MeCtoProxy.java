@@ -100,5 +100,10 @@ public class MeCtoProxy {
         event.setResult(
                 PreLoginEvent.PreLoginComponentResult.forceOfflineMode()
         );
+        LOGGER.info(
+                "Incoming connection from {} player name: {}, forcing offline mode authentication",
+                event.getUsername(),
+                event.getConnection().getRemoteAddress().getAddress()
+        );
     }
 }
