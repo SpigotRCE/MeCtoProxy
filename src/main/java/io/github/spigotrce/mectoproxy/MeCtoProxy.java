@@ -2,6 +2,7 @@ package io.github.spigotrce.mectoproxy;
 
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyPingEvent;
 import com.velocitypowered.api.network.ProtocolVersion;
@@ -91,5 +92,13 @@ public class MeCtoProxy {
         LOGGER.info("Received proxy ping from: {}", event.getConnection().getRemoteAddress().getAddress());
         LAST_PROTOCOL_VERSION = event.getConnection().getProtocolVersion(); // Updating the last protocol version oof the client
         event.setPing(CACHED_SERVER_PING);
+    }
+
+    @Subscribe
+    public void onPlayerPreLoginEvent(PreLoginEvent event) {
+        // Force offline mode authentication
+        event.setResult(
+                PreLoginEvent.PreLoginComponentResult.forceOfflineMode()
+        );
     }
 }
