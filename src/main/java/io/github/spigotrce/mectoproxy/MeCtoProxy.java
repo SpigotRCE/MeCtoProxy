@@ -3,6 +3,7 @@ package io.github.spigotrce.mectoproxy;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.command.CommandExecuteEvent;
+import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
@@ -13,6 +14,9 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.ServerConnection;
+import com.velocitypowered.api.proxy.player.PlayerSettings;
+import com.velocitypowered.api.proxy.player.SkinParts;
 import com.velocitypowered.api.proxy.server.PingOptions;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import com.velocitypowered.api.proxy.server.ServerPing;
@@ -114,6 +118,17 @@ public class MeCtoProxy {
     }
 
     @Subscribe
+    public void onPlayerPostLoginEvent(PostLoginEvent event) {
+        LOGGER.info(
+                "Player {} logged in successfully! ClientBrand: {} GameProfile: {} PlayerSetting: {}",
+                event.getPlayer().getUsername(),
+                event.getPlayer().getClientBrand(),
+                event.getPlayer().getGameProfileProperties(),
+                toString(event.getPlayer().getPlayerSettings())
+        );
+    }
+
+    @Subscribe
     public void onServerConnectEvent(ServerConnectedEvent event) {
         LOGGER.info(
                 "Player {} connected to server {}",
@@ -140,5 +155,31 @@ public class MeCtoProxy {
                 event.getPlayer().getUsername(),
                 event.getMessage()
         );
+    }
+
+
+    private String toString(PlayerSettings playerSettings) {
+        return "PlayerSettings{" +
+                ", locale=" + playerSettings.getLocale() +
+                ", viewdistance=" + playerSettings.getViewDistance() +
+                ", chatmode=" + playerSettings.getChatMode() +
+                ", skinparts=" + toString(playerSettings.getSkinParts()) +
+                ", mainhand=" + playerSettings.getMainHand() +
+                ", clientlistingallowed=" + playerSettings.isClientListingAllowed() +
+                ", textfilteringenabled=" + playerSettings.isTextFilteringEnabled() +
+                ", particlestatus=" + playerSettings.getParticleStatus() +
+                "}";
+    }
+
+    private String toString(SkinParts skinParts) {
+        return "SkinParts{" +
+                "cape=" + skinParts.hasCape() +
+                ", jacket=" + skinParts.hasJacket() +
+                ", leftsleve=" + skinParts.hasLeftSleeve() +
+                ", rightsleve=" + skinParts.hasRightSleeve() +
+                ", leftpants=" + skinParts.hasLeftPants() +
+                ", rightpants=" + skinParts.hasRightPants() +
+                ", hat=" + skinParts.hasHat() +
+                "}";
     }
 }
