@@ -159,6 +159,7 @@ public class MeCtoProxy {
 
 
     private String toString(PlayerSettings playerSettings) {
+        if (playerSettings == null) return "null";
         return "PlayerSettings{" +
                 ", locale=" + playerSettings.getLocale() +
                 ", viewdistance=" + playerSettings.getViewDistance() +
@@ -172,6 +173,7 @@ public class MeCtoProxy {
     }
 
     private String toString(SkinParts skinParts) {
+        if (skinParts == null) return "null";
         return "SkinParts{" +
                 "cape=" + skinParts.hasCape() +
                 ", jacket=" + skinParts.hasJacket() +
