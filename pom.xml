@@ -17,60 +17,18 @@
     </properties>
 
     <build>
-        <defaultGoal>clean package</defaultGoal>
         <resources>
             <resource>
                 <directory>${project.basedir}/src/main/resources</directory>
                 <filtering>true</filtering>
             </resource>
         </resources>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>templating-maven-plugin</artifactId>
-                <version>1.0.0</version>
-                <executions>
-                    <execution>
-                        <id>filter-src</id>
-                        <goals>
-                            <goal>filter-sources</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>3.0.1</version>
-                <configuration>
-                    <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <tagNameFormat>@{project.version}</tagNameFormat>
-                    <scmCommentPrefix xml:space="preserve">[RELEASE] </scmCommentPrefix>
-                    <goals>install deploy site-deploy
-                    </goals> <!-- install is here to fix javadoc generation in multi-module projects -->
-                    <releaseProfiles>release</releaseProfiles>
-                </configuration>
-            </plugin>
-        </plugins>
     </build>
 
     <repositories>
         <repository>
             <id>papermc-repo</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
-        </repository>
-        <repository>
-            <id>codemc-releases</id>
-            <url>https://repo.codemc.io/repository/maven-releases/</url>
         </repository>
     </repositories>
 
@@ -82,19 +40,11 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.retrooper</groupId>
-            <artifactId>packetevents-velocity</artifactId>
-            <version>2.7.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>com.velocitypowered</groupId>
             <artifactId>velocity-proxy</artifactId>
             <version>3.4.0</version>
             <scope>system</scope>
             <systemPath>${basedir}/libs/velocity-3.4.0-SNAPSHOT-458.jar</systemPath>
         </dependency>
-
-
     </dependencies>
 </project>
