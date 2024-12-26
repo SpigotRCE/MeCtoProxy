@@ -1,7 +1,5 @@
 package io.github.spigotrce.mectoproxy.command.impl;
 
-import com.velocitypowered.api.command.SimpleCommand.Invocation;
-import com.velocitypowered.api.proxy.ConsoleCommandSource;
 import io.github.spigotrce.mectoproxy.command.AbstractCommand;
 import io.github.spigotrce.mectoproxy.MeCtoProxy;
 import net.kyori.adventure.text.Component;

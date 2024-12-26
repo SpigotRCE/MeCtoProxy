@@ -1,7 +1,6 @@
 package io.github.spigotrce.mectoproxy;
 
 import com.google.inject.Inject;
-import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.command.CommandExecuteEvent;
@@ -27,7 +26,6 @@ import com.velocitypowered.api.util.Favicon;
 import io.github.spigotrce.mectoproxy.command.AbstractCommand;
 import io.github.spigotrce.mectoproxy.command.impl.ChangeIPCommand;
 import net.kyori.adventure.text.Component;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 
 import java.net.InetSocketAddress;
@@ -36,7 +34,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Plugin(
         id = "mectoproxy",
