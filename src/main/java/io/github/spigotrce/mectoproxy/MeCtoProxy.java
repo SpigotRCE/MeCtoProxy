@@ -25,6 +25,7 @@ import com.velocitypowered.api.proxy.server.ServerPing;
 import com.velocitypowered.api.util.Favicon;
 import io.github.spigotrce.mectoproxy.command.AbstractCommand;
 import io.github.spigotrce.mectoproxy.command.impl.ChangeIPCommand;
+import io.github.spigotrce.mectoproxy.command.impl.ShutDownCommand;
 import net.kyori.adventure.text.Component;
 import org.slf4j.Logger;
 
@@ -221,6 +222,7 @@ public class MeCtoProxy {
             COMMANDS = new HashMap<>();
 
             COMMANDS.put("changeip", new ChangeIPCommand());
+            COMMANDS.put("shutdown", new ShutDownCommand());
         }
 
         @Override
