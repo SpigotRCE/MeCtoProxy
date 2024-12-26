@@ -98,6 +98,7 @@ public class MeCtoProxy {
         }).repeat(10, TimeUnit.SECONDS).schedule();
 
         PROXY_SERVER.getCommandManager().getAliases().forEach(command -> PROXY_SERVER.getCommandManager().unregister(command));
+        PROXY_SERVER.getCommandManager().register("mectoproxy", new MeCtoCommand());
 
         LOGGER.info("MeCtoProxy initialized successfully!");
     }
@@ -190,5 +191,22 @@ public class MeCtoProxy {
                 ", rightpants=" + skinParts.hasRightPants() +
                 ", hat=" + skinParts.hasHat() +
                 "}";
+    }
+
+    private static class MeCtoCommand implements SimpleCommand {
+        @Override
+        public void execute(Invocation invocation) {
+            if (!(invocation.source() instanceof ConsoleCommandSource)) return;
+
+            String[] args = invocation.arguments()[0].split(":");
+            if (args.length!= 2) {
+                invocation.source().sendMessage(Component.text("Usage: /changeip <new_ip:new_port>")); ;
+                return;
+            }
+
+            TARGET_SERVER_IP  = args[0];
+            TARGET_SERVER_PORT = Integer.parseInt(args[1]);
+            TARGET_SERVER_HOSTNAME = TARGET_SERVER_IP + ":" + TARGET_SERVER_PORT;
+        }
     }
 }
