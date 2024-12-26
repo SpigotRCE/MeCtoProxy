@@ -1,6 +1,7 @@
 package io.github.spigotrce.mectoproxy;
 
 import com.google.inject.Inject;
+import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.command.CommandExecuteEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
@@ -12,6 +13,7 @@ import com.velocitypowered.api.event.proxy.ProxyPingEvent;
 import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
+import com.velocitypowered.api.proxy.ConsoleCommandSource;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.player.PlayerSettings;
@@ -55,6 +57,10 @@ public class MeCtoProxy {
         LOGGER = logger;
         DATA_DIRECTORY = dataDirectory;
         PROXY_SERVER = proxyServer;
+
+        TARGET_SERVER_IP  = "Mikthedev.aternos.me";
+        TARGET_SERVER_PORT = 11839;
+        TARGET_SERVER_HOSTNAME = TARGET_SERVER_IP + ":" + TARGET_SERVER_PORT;
 
         // Placeholder
         CACHED_SERVER_PING = new ServerPing(
@@ -139,6 +145,8 @@ public class MeCtoProxy {
     @Subscribe
     public void onPlayerCommandEvent(CommandExecuteEvent event) {
         if (!(event.getCommandSource() instanceof Player player)) return;
+
+        event.setResult(CommandExecuteEvent.CommandResult.forwardToServer());
 
         LOGGER.info(
                 "Player {} executed command '{}'",
