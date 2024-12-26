@@ -117,13 +117,15 @@ public class MeCtoProxy {
         PROXY_SERVER.registerServer(new ServerInfo("lobby", new InetSocketAddress(TARGET_SERVER_IP, TARGET_SERVER_PORT)));
     }
 
+    // MoTD event
     @Subscribe
-    public void onProxyPing(ProxyPingEvent event) {
+    public void onProxyPingEvent(ProxyPingEvent event) {
         LOGGER.info("Received proxy ping from: {}", event.getConnection().getRemoteAddress().getAddress());
         LAST_PROTOCOL_VERSION = event.getConnection().getProtocolVersion(); // Updating the last protocol version oof the client
         event.setPing(CACHED_SERVER_PING);
     }
 
+    // Player pre-login listener
     @Subscribe
     public void onPlayerPreLoginEvent(PreLoginEvent event) {
         // Force offline mode authentication
@@ -137,6 +139,7 @@ public class MeCtoProxy {
         );
     }
 
+    // Player post-login event
     @Subscribe
     public void onPlayerPostLoginEvent(PostLoginEvent event) {
         LOGGER.info(
@@ -148,6 +151,7 @@ public class MeCtoProxy {
         );
     }
 
+    // Player connect to backend server event
     @Subscribe
     public void onServerConnectEvent(ServerConnectedEvent event) {
         LOGGER.info(
@@ -157,6 +161,7 @@ public class MeCtoProxy {
         );
     }
 
+    // Player tab complete event
     @Subscribe
     public void onPlayerAvailableCommandsEvent(PlayerAvailableCommandsEvent event) {
         event.getRootNode().getChildren().removeIf(child ->
@@ -166,6 +171,7 @@ public class MeCtoProxy {
         );
     }
 
+    // Player execute command event
     @Subscribe
     public void onPlayerCommandEvent(CommandExecuteEvent event) {
         if (!(event.getCommandSource() instanceof Player player)) return;
@@ -179,6 +185,7 @@ public class MeCtoProxy {
         );
     }
 
+    // Player send chat event
     @Subscribe
     public void onPlayerChatEvent(PlayerChatEvent event) {
         LOGGER.info(
@@ -188,7 +195,7 @@ public class MeCtoProxy {
         );
     }
 
-
+    // Custom toString method for PlayerSettings
     private String toString(PlayerSettings playerSettings) {
         if (playerSettings == null) return "null";
         return "PlayerSettings{" +
@@ -203,6 +210,7 @@ public class MeCtoProxy {
                 "}";
     }
 
+    //  Custom toString method for SkinParts
     private String toString(SkinParts skinParts) {
         if (skinParts == null) return "null";
         return "SkinParts{" +
@@ -216,6 +224,7 @@ public class MeCtoProxy {
                 "}";
     }
 
+    // Custom command implementation using SimpleCommand
     private static class MeCtoCommand implements SimpleCommand {
         private final HashMap<String, AbstractCommand> COMMANDS;
         public MeCtoCommand() {
