@@ -43,6 +43,8 @@ import java.util.stream.Collectors;
         version = "1.0-SNAPSHOT"
 )
 public class MeCtoProxy {
+    public static MeCtoProxy INSTANCE;
+
     @Inject
     public static Logger LOGGER;
     @Inject
@@ -61,6 +63,8 @@ public class MeCtoProxy {
 
     @Inject
     public MeCtoProxy(Logger logger, @DataDirectory Path dataDirectory, ProxyServer proxyServer) {
+        INSTANCE = this;
+
         LOGGER = logger;
         DATA_DIRECTORY = dataDirectory;
         PROXY_SERVER = proxyServer;
@@ -84,13 +88,7 @@ public class MeCtoProxy {
     public void onProxyInitialization(ProxyInitializeEvent event) {
         LOGGER.info("Initializing MeCtoProxy...");
 
-        // Unregistering all servers
-        PROXY_SERVER.getAllServers().forEach(server -> PROXY_SERVER.unregisterServer(
-                server.getServerInfo()
-        ));
-
-        // Registering the target server
-        PROXY_SERVER.registerServer(new ServerInfo("lobby", new InetSocketAddress(TARGET_SERVER_IP, TARGET_SERVER_PORT)));
+        registerTargetServer();
 
         // Starting an asynchronous task to cache the server ping information
         PROXY_SERVER.getScheduler().buildTask(this, () -> {
@@ -108,6 +106,16 @@ public class MeCtoProxy {
         PROXY_SERVER.getCommandManager().register("mectoproxy", new MeCtoCommand());
 
         LOGGER.info("MeCtoProxy initialized successfully!");
+    }
+
+    public void registerTargetServer() {
+        // Unregistering all servers
+        PROXY_SERVER.getAllServers().forEach(server -> PROXY_SERVER.unregisterServer(
+                server.getServerInfo()
+        ));
+
+        // Registering the target server
+        PROXY_SERVER.registerServer(new ServerInfo("lobby", new InetSocketAddress(TARGET_SERVER_IP, TARGET_SERVER_PORT)));
     }
 
     @Subscribe

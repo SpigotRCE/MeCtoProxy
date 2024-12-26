@@ -19,6 +19,8 @@ public class ChangeIPCommand extends AbstractCommand {
         MeCtoProxy.TARGET_SERVER_PORT = Integer.parseInt(args[1]);
         MeCtoProxy.TARGET_SERVER_HOSTNAME = MeCtoProxy.TARGET_SERVER_IP + ":" + MeCtoProxy.TARGET_SERVER_PORT;
 
+        MeCtoProxy.INSTANCE.registerTargetServer();
+
         MeCtoProxy.PROXY_SERVER.getConsoleCommandSource().sendMessage(Component.text("Target server IP and port changed to " + MeCtoProxy.TARGET_SERVER_HOSTNAME));
     }
 }
