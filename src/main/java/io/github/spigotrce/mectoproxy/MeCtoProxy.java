@@ -1,6 +1,7 @@
 package io.github.spigotrce.mectoproxy;
 
 import com.google.inject.Inject;
+import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.command.CommandExecuteEvent;
@@ -22,13 +23,19 @@ import com.velocitypowered.api.proxy.server.PingOptions;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import com.velocitypowered.api.proxy.server.ServerPing;
 import com.velocitypowered.api.util.Favicon;
+import io.github.spigotrce.mectoproxy.command.AbstractCommand;
+import io.github.spigotrce.mectoproxy.command.impl.ChangeIPCommand;
 import net.kyori.adventure.text.Component;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 
 import java.net.InetSocketAddress;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Plugin(
         id = "mectoproxy",
@@ -194,19 +201,29 @@ public class MeCtoProxy {
     }
 
     private static class MeCtoCommand implements SimpleCommand {
+        private final HashMap<String, AbstractCommand> COMMANDS;
+        public MeCtoCommand() {
+            COMMANDS = new HashMap<>();
+
+            COMMANDS.put("changeip", new ChangeIPCommand());
+        }
+
         @Override
         public void execute(Invocation invocation) {
             if (!(invocation.source() instanceof ConsoleCommandSource)) return;
 
-            String[] args = invocation.arguments()[0].split(":");
-            if (args.length!= 2) {
-                invocation.source().sendMessage(Component.text("Usage: /changeip <new_ip:new_port>")); ;
+            String[] args = invocation.arguments();
+            if (args.length == 0) {
+                invocation.source().sendMessage(Component.text("Available commands: " + String.join(", ", COMMANDS.keySet())));
                 return;
             }
-
-            TARGET_SERVER_IP  = args[0];
-            TARGET_SERVER_PORT = Integer.parseInt(args[1]);
-            TARGET_SERVER_HOSTNAME = TARGET_SERVER_IP + ":" + TARGET_SERVER_PORT;
+            String commandName = args[0];
+            AbstractCommand command = COMMANDS.get(commandName);
+            if (command == null) {
+                invocation.source().sendMessage(Component.text("Unknown command: " + commandName));
+                return;
+            }
+            command.execute(Arrays.copyOfRange(args, 1, args.length));
         }
     }
 }
