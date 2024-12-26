@@ -5,6 +5,7 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.command.CommandExecuteEvent;
+import com.velocitypowered.api.event.command.PlayerAvailableCommandsEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
@@ -155,6 +156,15 @@ public class MeCtoProxy {
                 "Player {} connected to server {}",
                 event.getPlayer().getUsername(),
                 event.getServer().getServerInfo().getName()
+        );
+    }
+
+    @Subscribe
+    public void onPlayerAvailableCommandsEvent(PlayerAvailableCommandsEvent event) {
+        event.getRootNode().getChildren().removeIf(child ->
+                PROXY_SERVER.getCommandManager().getAliases().contains(
+                        child.getName().toLowerCase()
+                )
         );
     }
 
