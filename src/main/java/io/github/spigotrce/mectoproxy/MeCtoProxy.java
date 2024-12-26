@@ -23,18 +23,27 @@ import com.velocitypowered.api.proxy.server.PingOptions;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import com.velocitypowered.api.proxy.server.ServerPing;
 import com.velocitypowered.api.util.Favicon;
+import com.velocitypowered.proxy.protocol.MinecraftPacket;
+import com.velocitypowered.proxy.protocol.StateRegistry;
 import io.github.spigotrce.mectoproxy.command.AbstractCommand;
 import io.github.spigotrce.mectoproxy.command.impl.ChangeIPCommand;
 import io.github.spigotrce.mectoproxy.command.impl.ShutDownCommand;
+import io.github.spigotrce.mectoproxy.hook.PacketHook;
+import io.github.spigotrce.mectoproxy.hook.PluginMessageHook;
+import io.netty.util.collection.IntObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.kyori.adventure.text.Component;
 import org.slf4j.Logger;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.net.InetSocketAddress;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 @Plugin(
         id = "mectoproxy",
@@ -52,6 +61,8 @@ public class MeCtoProxy {
     @Inject
     public static ProxyServer PROXY_SERVER;
 
+    public static List<PacketHook> PACKET_HOOKS;
+
     public static String TARGET_SERVER_IP; // Numeric IP
     public static int TARGET_SERVER_PORT; // Port number
     public static String TARGET_SERVER_HOSTNAME; // Hostname
@@ -67,6 +78,8 @@ public class MeCtoProxy {
         LOGGER = logger;
         DATA_DIRECTORY = dataDirectory;
         PROXY_SERVER = proxyServer;
+
+        PACKET_HOOKS = new ArrayList<>();
 
         TARGET_SERVER_IP  = "Mikthedev.aternos.me";
         TARGET_SERVER_PORT = 11839;
@@ -87,6 +100,8 @@ public class MeCtoProxy {
     public void onProxyInitialization(ProxyInitializeEvent event) {
         LOGGER.info("Initializing MeCtoProxy...");
 
+        registerPacketHooks();
+
         registerTargetServer();
 
         // Starting an asynchronous task to cache the server ping information
@@ -105,6 +120,58 @@ public class MeCtoProxy {
         PROXY_SERVER.getCommandManager().register("mectoproxy", new MeCtoCommand());
 
         LOGGER.info("MeCtoProxy initialized successfully!");
+    }
+
+    public void registerPacketHooks() {
+        try {
+            MethodHandle packetIdToSupplierField = MethodHandles
+                    .privateLookupIn(StateRegistry.PacketRegistry.ProtocolRegistry.class, MethodHandles.lookup())
+                    .findGetter(StateRegistry.PacketRegistry.ProtocolRegistry.class, "packetIdToSupplier", IntObjectMap.class);
+
+            MethodHandle packetClassToIdField = MethodHandles
+                    .privateLookupIn(StateRegistry.PacketRegistry.ProtocolRegistry.class, MethodHandles.lookup())
+                    .findGetter(StateRegistry.PacketRegistry.ProtocolRegistry.class, "packetClassToId", Object2IntMap.class);
+
+            PACKET_HOOKS.add(new PluginMessageHook());
+
+            BiConsumer<? super ProtocolVersion, ? super StateRegistry.PacketRegistry.ProtocolRegistry> consumer = (version, registry) -> {
+                try {
+                    IntObjectMap<Supplier<? extends MinecraftPacket>> packetIdToSupplier
+                            = (IntObjectMap<Supplier<? extends MinecraftPacket>>) packetIdToSupplierField.invoke(registry);
+
+                    Object2IntMap<Class<? extends MinecraftPacket>> packetClassToId
+                            = (Object2IntMap<Class<? extends MinecraftPacket>>) packetClassToIdField.invoke(registry);
+
+                    PACKET_HOOKS.forEach(hook -> {
+                        int packetId = packetClassToId.getInt(hook.getType());
+                        packetClassToId.put(hook.getHookClass(), packetId);
+                        packetIdToSupplier.remove(packetId);
+                        packetIdToSupplier.put(packetId, hook.getHook());
+                    });
+                } catch (Throwable e) {
+                    LOGGER.error("Failed to initialize packet hooks", e);
+                }
+            };
+
+            MethodHandle clientboundGetter = MethodHandles.privateLookupIn(StateRegistry.class, MethodHandles.lookup())
+                    .findGetter(StateRegistry.class, "clientbound", StateRegistry.PacketRegistry.class);
+
+            MethodHandle serverboundGetter = MethodHandles.privateLookupIn(StateRegistry.class, MethodHandles.lookup())
+                    .findGetter(StateRegistry.class, "serverbound", StateRegistry.PacketRegistry.class);
+
+            StateRegistry.PacketRegistry playClientbound = (StateRegistry.PacketRegistry) clientboundGetter.invokeExact(StateRegistry.PLAY);
+            StateRegistry.PacketRegistry configClientbound = (StateRegistry.PacketRegistry) clientboundGetter.invokeExact(StateRegistry.CONFIG);
+            StateRegistry.PacketRegistry handshakeServerbound = (StateRegistry.PacketRegistry) serverboundGetter.invokeExact(StateRegistry.HANDSHAKE);
+
+            MethodHandle versionsField = MethodHandles.privateLookupIn(StateRegistry.PacketRegistry.class, MethodHandles.lookup())
+                    .findGetter(StateRegistry.PacketRegistry.class, "versions", Map.class);
+
+            ((Map<ProtocolVersion, StateRegistry.PacketRegistry.ProtocolRegistry>) versionsField.invokeExact(playClientbound)).forEach(consumer);
+            ((Map<ProtocolVersion, StateRegistry.PacketRegistry.ProtocolRegistry>) versionsField.invokeExact(configClientbound)).forEach(consumer);
+            ((Map<ProtocolVersion, StateRegistry.PacketRegistry.ProtocolRegistry>) versionsField.invokeExact(handshakeServerbound)).forEach(consumer);
+        } catch (Throwable e) {
+            LOGGER.error("Failed to initialize packet hooks", e);
+        }
     }
 
     public void registerTargetServer() {
