@@ -87,5 +87,14 @@
             <version>2.7.0</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.velocitypowered</groupId>
+            <artifactId>velocity-proxy</artifactId>
+            <version>3.4.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/velocity-3.4.0-SNAPSHOT-458.jar</systemPath>
+        </dependency>
+
+
     </dependencies>
 </project>
