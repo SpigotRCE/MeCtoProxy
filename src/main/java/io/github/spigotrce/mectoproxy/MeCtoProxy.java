@@ -7,6 +7,7 @@ import com.velocitypowered.api.event.command.CommandExecuteEvent;
 import com.velocitypowered.api.event.command.PlayerAvailableCommandsEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
+import com.velocitypowered.api.event.player.GameProfileRequestEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -23,11 +24,13 @@ import com.velocitypowered.api.proxy.server.PingOptions;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import com.velocitypowered.api.proxy.server.ServerPing;
 import com.velocitypowered.api.util.Favicon;
+import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.proxy.protocol.MinecraftPacket;
 import com.velocitypowered.proxy.protocol.StateRegistry;
 import io.github.spigotrce.mectoproxy.command.AbstractCommand;
 import io.github.spigotrce.mectoproxy.command.impl.ChangeIPCommand;
 import io.github.spigotrce.mectoproxy.command.impl.ShutDownCommand;
+import io.github.spigotrce.mectoproxy.hook.HandshakeHook;
 import io.github.spigotrce.mectoproxy.hook.PacketHook;
 import io.github.spigotrce.mectoproxy.hook.PluginMessageHook;
 import io.netty.util.collection.IntObjectMap;
@@ -133,6 +136,7 @@ public class MeCtoProxy {
                     .findGetter(StateRegistry.PacketRegistry.ProtocolRegistry.class, "packetClassToId", Object2IntMap.class);
 
             PACKET_HOOKS.add(new PluginMessageHook());
+            PACKET_HOOKS.add(new HandshakeHook());
 
             BiConsumer<? super ProtocolVersion, ? super StateRegistry.PacketRegistry.ProtocolRegistry> consumer = (version, registry) -> {
                 try {
