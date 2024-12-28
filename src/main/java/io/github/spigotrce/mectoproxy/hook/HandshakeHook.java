@@ -27,7 +27,7 @@ public class HandshakeHook extends HandshakePacket implements PacketHook {
     @Override
     public boolean handle(MinecraftSessionHandler handler) {
         try {
-            SERVER_ADDRESS_FIELD.set(this, MeCtoProxy.TARGET_SERVER_IP);
+            SERVER_ADDRESS_FIELD.set(this, MeCtoProxy.TARGET_SERVER_HOSTNAME);
             PORT_FIELD.set(this, MeCtoProxy.TARGET_SERVER_PORT);
         } catch (IllegalAccessException e) {
             MeCtoProxy.LOGGER.error("Failed to initialize handshake hook", e);

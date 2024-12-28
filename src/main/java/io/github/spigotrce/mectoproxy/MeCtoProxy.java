@@ -64,7 +64,7 @@ public class MeCtoProxy {
 
     public static List<PacketHook> PACKET_HOOKS;
 
-    public static String TARGET_SERVER_IP; // Numeric IP
+    public static String TARGET_SERVER_HOSTNAME; // Numeric IP
     public static int TARGET_SERVER_PORT; // Port number
 
     public static ServerPing CACHED_SERVER_PING; // Cached target server ping
@@ -81,7 +81,7 @@ public class MeCtoProxy {
 
         PACKET_HOOKS = new ArrayList<>();
 
-        TARGET_SERVER_IP  = "Mikthedev.aternos.me";
+        TARGET_SERVER_HOSTNAME = "Mikthedev.aternos.me";
         TARGET_SERVER_PORT = 11839;
 
         // Placeholder
@@ -181,7 +181,7 @@ public class MeCtoProxy {
         ));
 
         // Registering the target server
-        PROXY_SERVER.registerServer(new ServerInfo("lobby", new InetSocketAddress(TARGET_SERVER_IP, TARGET_SERVER_PORT)));
+        PROXY_SERVER.registerServer(new ServerInfo("lobby", new InetSocketAddress(TARGET_SERVER_HOSTNAME, TARGET_SERVER_PORT)));
     }
 
     // MoTD event
