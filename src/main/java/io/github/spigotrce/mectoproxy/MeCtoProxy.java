@@ -7,7 +7,6 @@ import com.velocitypowered.api.event.command.CommandExecuteEvent;
 import com.velocitypowered.api.event.command.PlayerAvailableCommandsEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
-import com.velocitypowered.api.event.player.GameProfileRequestEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -24,7 +23,6 @@ import com.velocitypowered.api.proxy.server.PingOptions;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import com.velocitypowered.api.proxy.server.ServerPing;
 import com.velocitypowered.api.util.Favicon;
-import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.proxy.protocol.MinecraftPacket;
 import com.velocitypowered.proxy.protocol.StateRegistry;
 import io.github.spigotrce.mectoproxy.command.AbstractCommand;
@@ -68,7 +66,6 @@ public class MeCtoProxy {
 
     public static String TARGET_SERVER_IP; // Numeric IP
     public static int TARGET_SERVER_PORT; // Port number
-    public static String TARGET_SERVER_HOSTNAME; // Hostname
 
     public static ServerPing CACHED_SERVER_PING; // Cached target server ping
 
@@ -86,7 +83,6 @@ public class MeCtoProxy {
 
         TARGET_SERVER_IP  = "Mikthedev.aternos.me";
         TARGET_SERVER_PORT = 11839;
-        TARGET_SERVER_HOSTNAME = TARGET_SERVER_IP + ":" + TARGET_SERVER_PORT;
 
         // Placeholder
         CACHED_SERVER_PING = new ServerPing(
