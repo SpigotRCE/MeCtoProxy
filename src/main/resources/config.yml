@@ -1,0 +1,43 @@
+# DO NOT EDIT "file-version"
+file-version: 1
+
+# Ping options for returning the motd of the target server.
+ping:
+  # In what way should we ping the target server to get the motd?
+  # ASYNC: Pings the server in an asynchronous thread and caches the result for x seconds.
+  # ON_REQUEST: Pings the server when a player pings the proxy and immediately returns the result.
+  ping-type: "ASYNC"
+
+  # How long should we cache the motd for?
+  cache-duration: 3
+
+  # The default motd if the server didn't respond in time
+  # The text on the motd
+  text: "Welcome to my server"
+  # The protocol version
+  version: "47"
+  # The player count
+  player-count: "0/100"
+  # The favicon will be linked to favicon.png
+
+# F3 server brand shown to the client
+mc-brand:
+  # {target} the brand of the target server
+  # {proxy} the brand of the proxy server
+  # You can add both of them at the same time
+  # By default we will just forward the brand of the target server
+  brand: "{target}"
+
+# How would we like to forward the handshake to the target server?
+handshake:
+  # {target} the hostname of the target server
+  # {player} the hostname player used to connect
+  # You can add both of them at the same time
+  # By default we will just forward the hostname of the target server
+  hostname: "{target}"
+
+  # {target} the port of the target server
+  # {player} the port player used to connect
+  # You can add both of them at the same time
+  # By default we will just forward the port of the target server
+  port: "{target}"
